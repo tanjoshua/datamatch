@@ -39,7 +39,11 @@ This document outlines the development stages and tasks for creating a simple da
 - [x] Implement survey question management
   - [x] Create questions table in database
   - [x] Create question form with validation
-  - [x] List, edit, delete questions functionality
+  - [x] List questions with card layout
+  - [x] Edit and delete questions functionality
+  - [x] Question reordering with up/down arrows
+  - [x] Bulk question addition
+- [x] Create empty results management page
 - [ ] User progress tracking view
 - [ ] Results processing activation button
 
