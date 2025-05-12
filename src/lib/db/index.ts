@@ -15,7 +15,7 @@ export type User = {
 };
 
 export async function getUser() {
-  const response = await sql`SELECT * FROM users ORDER BY id ASC`;
+  const response = await sql`SELECT * FROM users ORDER BY name ASC`;
   return response as User[];
 }
 
