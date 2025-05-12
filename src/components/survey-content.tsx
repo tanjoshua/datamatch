@@ -217,12 +217,14 @@ export function SurveyContent({ users, questions }: SurveyContentProps) {
               <div className="flex items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
               </div>
-              <p className="text-center text-muted-foreground">Loading your previous responses...</p>
+              <p className="text-center text-muted-foreground">Checking for any previous responses...</p>
             </div>
-          )}
+          )
+          }
 
           {/* Read-only view for completed surveys */}
-          {!loadingResponses && (previousResponses.length > 0 || submitSuccess) ? (
+
+          {!loadingResponses && ((previousResponses.length > 0 || submitSuccess) ? (
             <div className="space-y-6">
               <h2 className="text-2xl font-semibold text-center">Your Survey Responses</h2>
               <p className="text-center text-muted-foreground">
@@ -323,7 +325,7 @@ export function SurveyContent({ users, questions }: SurveyContentProps) {
                 </CardFooter>
               )}
             </form>
-          )}
+          ))}
         </>
       ) : (
         <div className="border rounded-lg p-6 shadow-sm bg-card">
