@@ -117,7 +117,7 @@ export function MatchResults({ selectedUserId }: MatchResultsProps) {
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold mb-2">Your DataMatch Results!</h2>
         <p className="text-muted-foreground">
-          Based on your survey answers, here are the people you are most compatible and least compatible with.
+          Based on your survey answers, here are the people most like you and least like you.
         </p>
       </div>
 
