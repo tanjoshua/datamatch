@@ -64,7 +64,7 @@ export function SurveyContent({ users, questions, selectedUserId, previousRespon
       setSubmitSuccess(false);
     }
   }, [selectedUserId, form]);
-  
+
   // Set loading state based on loadingResponses
   React.useEffect(() => {
     setIsLoading(loadingResponses);

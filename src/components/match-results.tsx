@@ -3,7 +3,8 @@
 import * as React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Info } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Info, Lightbulb } from "lucide-react";
 import { getMatchResults } from "@/app/actions";
 import { MatchComparisonContent } from "@/components/match-comparison-content";
 import {
@@ -136,6 +137,17 @@ export function MatchResults({ selectedUserId }: MatchResultsProps) {
           Based on your survey answers, here are the people most like you and least like you.
         </p>
       </div>
+
+      <Alert className="bg-pink-50 border-pink-200">
+        <Lightbulb className="h-4 w-4 text-pink-500" />
+        <AlertDescription className="text-sm">
+          <p className="font-medium text-pink-900 mb-2">To facilitate speed bonding, consider the following activities with your matches:</p>
+          <ul className="space-y-1 text-pink-800">
+            <li><strong>Most similar</strong> - stare awkwardly at each other across the room and never speak; choose each other&apos;s birdsona; take MC together</li>
+            <li><strong>Least similar</strong> - rat each other&apos;s messages out to Faizad; 1v1 brawl in the CSC lobby</li>
+          </ul>
+        </AlertDescription>
+      </Alert>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Most Similar Matches */}

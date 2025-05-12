@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import { UserSelect } from "@/components/user-select";
-import { Alert, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Lightbulb } from "lucide-react";
 import { UserCircle } from "lucide-react";
 import { getUserResponses } from "./actions";
 import { SurveyContent } from "@/components/survey-content";
@@ -73,7 +74,15 @@ export function HomeClient({ users, questions, matchResultsAvailable }: HomeClie
       <div className="w-full max-w-3xl mx-auto space-y-8">
         {!selectedUser ? (
           <div className="bg-white rounded-lg shadow-md p-6 space-y-4">
-            <h1 className="text-2xl font-bold text-center">FC DataMatch</h1>
+            <h1 className="text-2xl font-bold text-center">FC Datamatch</h1>
+
+            <Alert className="bg-pink-50 border-pink-200">
+              <Lightbulb className="h-4 w-4 text-pink-500" />
+              <AlertDescription className="text-sm text-pink-800">
+                Hey FC-mates! Its week 5.5, and hopefully you have gotten the chance to mix and mingle, but realistically thats tough with 67 other people milling around at all times. We designed this quickie test to help you get friend-matched with folks you might not have had a chance to meet, but are your potential course-soul-mates! Do with the results what you will ~
+              </AlertDescription>
+            </Alert>
+
             <p className="text-center">Please select your name to begin the survey</p>
             <UserSelect
               users={users}
@@ -125,7 +134,7 @@ export function HomeClient({ users, questions, matchResultsAvailable }: HomeClie
 
         <div className="text-center">
           <p className="text-xs text-muted-foreground mt-4">
-            FC DataMatch © {new Date().getFullYear()}
+            FC Datamatch © {new Date().getFullYear()}
           </p>
         </div>
       </div>

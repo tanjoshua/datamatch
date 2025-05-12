@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "44th FC DataMatch",
-  description: "44th FC DataMatch",
+  title: "44th FC Datamatch",
+  description: "44th FC Datamatch",
 };
 
 export default function RootLayout({
