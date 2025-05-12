@@ -31,6 +31,8 @@ export type UserResponse = {
   option_text: string;
 };
 
+
+
 // Extend Question type to include options array
 export type QuestionWithOptions = Question & {
   options: QuestionOption[];
@@ -42,9 +44,10 @@ interface SurveyContentProps {
   selectedUserId: string | null;
   previousResponses: UserResponse[];
   loadingResponses: boolean;
+  onResponsesUpdate?: (responses: UserResponse[]) => void;
 }
 
-export function SurveyContent({ users, questions, selectedUserId, previousResponses, loadingResponses }: SurveyContentProps) {
+export function SurveyContent({ users, questions, selectedUserId, previousResponses, loadingResponses, onResponsesUpdate }: SurveyContentProps) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [submitSuccess, setSubmitSuccess] = React.useState(false);
@@ -100,7 +103,23 @@ export function SurveyContent({ users, questions, selectedUserId, previousRespon
         setSubmitSuccess(true);
         toast.success("Survey submitted successfully!");
 
-        // No need to fetch responses here as they will be passed from parent
+        // Convert the submitted form data to UserResponse format
+        if (onResponsesUpdate) {
+          const userResponses: UserResponse[] = responses.map(response => {
+            // Find the question and option text from the questions array
+            const question = questions.find(q => q.id === response.questionId);
+            const option = question?.options.find(o => o.id === response.selectedOptionId);
+
+            return {
+              question_id: response.questionId,
+              selected_option_id: response.selectedOptionId,
+              question_text: question?.text || '',
+              option_text: option?.text || ''
+            };
+          });
+
+          onResponsesUpdate(userResponses);
+        }
       } else {
         toast.error(result.error || "Failed to submit survey. Please try again.");
       }

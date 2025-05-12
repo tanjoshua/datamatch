@@ -127,6 +127,7 @@ export function HomeClient({ users, questions, matchResultsAvailable }: HomeClie
                 selectedUserId={selectedUserId}
                 previousResponses={previousResponses}
                 loadingResponses={loadingResponses}
+                onResponsesUpdate={setPreviousResponses}
               />
             )}
           </>
