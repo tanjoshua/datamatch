@@ -36,10 +36,10 @@ This document outlines the development stages and tasks for creating a simple da
   - [x] Edit user functionality
   - [x] Delete user functionality
   - [x] Error handling with specific error messages
-- [ ] Implement survey question management
-  - [ ] Create questions table in database
-  - [ ] Create question form with validation
-  - [ ] List, edit, delete questions functionality
+- [x] Implement survey question management
+  - [x] Create questions table in database
+  - [x] Create question form with validation
+  - [x] List, edit, delete questions functionality
 - [ ] User progress tracking view
 - [ ] Results processing activation button
 

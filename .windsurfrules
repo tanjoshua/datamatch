@@ -8,7 +8,12 @@
 
 # Styling & UI
 - Use Tailwind CSS for styling.
-- Use Shadcn UI for components. Check the src/components directory for components. If the component is not yet there, use "npx shadcn@latest add <component-name>" to add it.
+
+# Shadcn UI
+- Use Shadcn UI for components. 
+- Check the src/components directory for components.
+- If the component is not yet there, use "npx shadcn@latest add <component-name>" to add it. Only do this if the component does not already exist.
+- Toast has been deprecated, use sonner for such cases.
 
 # Data Fetching & Forms
 - Use React Hook Form for form handling.
