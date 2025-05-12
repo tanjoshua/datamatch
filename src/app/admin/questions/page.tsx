@@ -3,6 +3,10 @@ import { getQuestions, getQuestionOptions, Question, QuestionOption } from "@/li
 import QuestionCards from "./question-cards";
 import AddQuestionDialog from "./add-question-dialog";
 
+// Disable caching for this page to ensure fresh data on every request
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export type QuestionWithOptions = {
   question: Question;
   options: QuestionOption[];

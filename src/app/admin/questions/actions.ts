@@ -70,17 +70,17 @@ export async function updateQuestionAction(
       const existingOptions = await sql`
         SELECT id FROM question_options WHERE question_id = ${id}
       `;
-      
+
       // Delete all existing options
       if (existingOptions && existingOptions.length > 0) {
         console.log('Deleting all existing options for question ID:', id);
         await sql`DELETE FROM question_options WHERE question_id = ${id}`;
       }
-      
+
       // Create new options
       await Promise.all(formData.options.map(async (option, index) => {
         if (!option.text.trim()) return; // Skip empty options
-        
+
         console.log('Creating new option:', option.text);
         await createQuestionOption(
           id,
@@ -107,8 +107,10 @@ export async function deleteQuestionAction(id: number) {
   try {
     await deleteQuestion(id);
 
-    // Revalidate the questions page after deleting a question
-    revalidatePath('/admin/questions');
+    // Force aggressive revalidation for production environment
+    revalidatePath('/admin/questions', 'page');
+    revalidatePath('/admin', 'layout');
+
     return { success: true };
   } catch (error) {
     console.error('Error deleting question:', error);
@@ -134,22 +136,159 @@ export async function swapQuestionPositionsAction(
       SET order_position = ${position2}
       WHERE id = ${questionId1}
     `;
-    
+
     // Update the second question's position
     await sql`
       UPDATE questions
       SET order_position = ${position1}
       WHERE id = ${questionId2}
     `;
-    
+
     // Revalidate the questions page after swapping positions
     revalidatePath('/admin/questions');
     return { success: true };
   } catch (error) {
     console.error('Error swapping question positions:', error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    };
+  }
+}
+
+// Define the interface for a bulk question entry
+interface BulkQuestionEntry {
+  text: string;
+  options: string[];
+}
+
+// Define interface for results
+interface BulkCreateResult {
+  success: boolean;
+  questionsAdded?: number;
+  failedQuestions?: { text: string, reason: string }[];
+  error?: string;
+}
+
+/**
+ * Parse raw text input into structured question data
+ * Format expected:
+ * question text
+ * - option 1
+ * - option 2
+ * - option 3
+ * 
+ * next question text
+ * - option a
+ * - option b
+ */
+function parseQuestionText(text: string): BulkQuestionEntry[] {
+  const questions: BulkQuestionEntry[] = [];
+  const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+  
+  let currentQuestion: BulkQuestionEntry | null = null;
+  
+  for (const line of lines) {
+    if (line.startsWith('-')) {
+      // This is an option for the current question
+      if (currentQuestion) {
+        const optionText = line.substring(1).trim();
+        if (optionText) {
+          currentQuestion.options.push(optionText);
+        }
+      }
+    } else {
+      // This is a new question
+      if (currentQuestion && currentQuestion.options.length > 0) {
+        questions.push(currentQuestion);
+      }
+      
+      currentQuestion = {
+        text: line,
+        options: []
+      };
+    }
+  }
+  
+  // Add the last question if it exists
+  if (currentQuestion && currentQuestion.options.length > 0) {
+    questions.push(currentQuestion);
+  }
+  
+  return questions;
+}
+
+// Server action to create multiple questions at once
+export async function createBulkQuestionsAction(rawText: string): Promise<BulkCreateResult> {
+  try {
+    // Parse the text input into structured questions
+    const parsedQuestions = parseQuestionText(rawText);
+    
+    if (parsedQuestions.length === 0) {
+      return {
+        success: false,
+        error: 'No valid questions found in input'
+      };
+    }
+    
+    // Get the current max order position
+    const result = await sql`SELECT MAX(order_position) as max_pos FROM questions`;
+    const maxPosition = result[0]?.max_pos || 0;
+    let currentPosition = maxPosition + 1;
+    
+    // Store any questions that fail to be created
+    const failedQuestions: { text: string, reason: string }[] = [];
+    let successCount = 0;
+    
+    // Create each question
+    for (const question of parsedQuestions) {
+      try {
+        if (question.options.length < 2) {
+          failedQuestions.push({
+            text: question.text,
+            reason: 'Question must have at least 2 options'
+          });
+          continue;
+        }
+        
+        // Create the question
+        const createdQuestion = await createQuestion(
+          question.text,
+          currentPosition++
+        );
+        
+        // Create options for this question
+        await Promise.all(question.options.map(async (optionText, index) => {
+          await createQuestionOption(
+            createdQuestion.id,
+            optionText,
+            index + 1 // Position starts at 1
+          );
+        }));
+        
+        successCount++;
+      } catch (error) {
+        console.error(`Error creating question "${question.text}":`, error);
+        failedQuestions.push({
+          text: question.text,
+          reason: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    }
+    
+    // Revalidate the questions page
+    revalidatePath('/admin/questions');
+    
+    return {
+      success: successCount > 0,
+      questionsAdded: successCount,
+      failedQuestions: failedQuestions.length > 0 ? failedQuestions : undefined
+    };
+  } catch (error) {
+    console.error('Error creating bulk questions:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
     };
   }
 }

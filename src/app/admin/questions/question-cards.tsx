@@ -6,7 +6,6 @@ import { QuestionWithOptions } from "./page";
 import {
   Card,
   CardContent,
-  CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import {
@@ -107,7 +106,7 @@ export default function QuestionCards({ questionsWithOptions }: QuestionCardsPro
       <div className="flex flex-col space-y-6">
         {questionsWithOptions.map(({ question, options }, index) => (
           <Card key={question.id} className="h-full flex flex-col">
-            <CardHeader>
+            <CardContent>
               <div className="flex justify-between items-start">
                 <CardTitle className="text-lg">{question.text}</CardTitle>
                 <div className="flex items-center space-x-1">
@@ -155,9 +154,7 @@ export default function QuestionCards({ questionsWithOptions }: QuestionCardsPro
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
-              </div>            </CardHeader>
-            <CardContent>
-              <h3 className="font-medium">Options:</h3>
+              </div>
               {options.length > 0 ? (
                 <ul>
                   {options.map((option) => (
