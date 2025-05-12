@@ -7,6 +7,9 @@ import { sql } from "@/lib/db";
 import { StatsCard } from "./stats-card";
 import { GenerateResultsButton } from "./generate-results-button";
 import { MatchResultsTable, type MatchResult } from "@/components/match-results-table";
+import { ResetSurveyButton } from "@/components/reset-survey-button";
+
+export const dynamic = 'force-dynamic';
 
 // Get match statistics from database
 async function getMatchStatistics() {
@@ -108,7 +111,10 @@ export default async function ResultsPage() {
             Process and view survey match results
           </p>
         </div>
-        <GenerateResultsButton hasResults={stats.hasResults} />
+        <div className="flex gap-3">
+          <ResetSurveyButton />
+          <GenerateResultsButton hasResults={stats.hasResults} />
+        </div>
       </div>
 
       {stats.error && (

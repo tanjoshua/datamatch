@@ -275,6 +275,49 @@ export async function getMatchComparison(user1Id: number, user2Id: number) {
 }
 
 /**
+ * Reset all survey responses and match results
+ */
+export async function resetSurveyAndResults() {
+  try {
+    // Start transaction
+    await sql`BEGIN`;
+
+    try {
+      // Delete all match results
+      await sql`TRUNCATE TABLE match_results`;
+      
+      // Delete all survey responses
+      await sql`TRUNCATE TABLE survey_responses`;
+      
+      // Reset user completion status
+      await sql`UPDATE users SET has_completed_survey = FALSE`;
+      
+      await sql`COMMIT`;
+      
+      // Revalidate the relevant pages
+      revalidatePath("/admin/results");
+      revalidatePath("/");
+      
+      return {
+        success: true,
+        message: "Survey responses and match results have been reset successfully."
+      };
+    } catch (err) {
+      await sql`ROLLBACK`;
+      throw err;
+    }
+  } catch (error) {
+    console.error("Error resetting survey data:", error);
+    return {
+      success: false,
+      error: typeof error === 'object' && error !== null && 'message' in error
+        ? String(error.message)
+        : "Failed to reset survey data. Please try again."
+    };
+  }
+}
+
+/**
  * Generate match results between all surveyed users
  */
 export async function generateMatchResults() {
