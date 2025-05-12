@@ -26,26 +26,32 @@ export default async function UsersManagementPage() {
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* User List */}
-        <Card className="col-span-1">
-          <CardHeader>
-            <CardTitle>User List</CardTitle>
-            <CardDescription>All registered users in the system</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <UsersTable users={users} />
-          </CardContent>
-        </Card>
+        <div>
+
+          <Card className="col-span-1">
+            <CardHeader>
+              <CardTitle>User List</CardTitle>
+              <CardDescription>All registered users in the system</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <UsersTable users={users} />
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Add User Form */}
-        <Card className="col-span-1">
-          <CardHeader>
-            <CardTitle>Add New User</CardTitle>
-            <CardDescription>Create a new user in the system</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <AddUserForm />
-          </CardContent>
-        </Card>
+        <div>
+
+          <Card className="col-span-1">
+            <CardHeader>
+              <CardTitle>Add New User</CardTitle>
+              <CardDescription>Create a new user in the system</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AddUserForm />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
