@@ -108,7 +108,10 @@ export default function QuestionCards({ questionsWithOptions }: QuestionCardsPro
           <Card key={question.id} className="h-full flex flex-col">
             <CardContent>
               <div className="flex justify-between items-start">
-                <CardTitle className="text-lg">{question.text}</CardTitle>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium text-muted-foreground">Question {index + 1} of {questionsWithOptions.length}</div>
+                  <CardTitle className="text-lg">{question.text}</CardTitle>
+                </div>
                 <div className="flex items-center space-x-1">
                   <Button
                     variant="ghost"

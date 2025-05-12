@@ -24,23 +24,13 @@ import { User } from "@/lib/db";
 interface UserSelectProps {
   users: User[];
   className?: string;
+  selectedUserId?: string;
+  onUserSelect: (userId: string) => void;
 }
 
-export function UserSelect({ users, className }: UserSelectProps) {
+export function UserSelect({ users, className, selectedUserId, onUserSelect }: UserSelectProps) {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
-
-  // Load selected user from localStorage on component mount
-  React.useEffect(() => {
-    const savedUserId = localStorage.getItem("selectedUserId");
-    if (savedUserId) {
-      const user = users.find((user) => user.id === parseInt(savedUserId));
-      if (user) {
-        setValue(user.id.toString());
-      }
-    }
-  }, [users]);
 
   return (
     <div className={className}>
@@ -52,8 +42,8 @@ export function UserSelect({ users, className }: UserSelectProps) {
             aria-expanded={open}
             className="w-full justify-between"
           >
-            {value
-              ? users.find((user) => user.id.toString() === value)?.name
+            {selectedUserId
+              ? users.find((user) => user.id.toString() === selectedUserId)?.name
               : "Select your name..."}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -71,8 +61,7 @@ export function UserSelect({ users, className }: UserSelectProps) {
                     onSelect={(currentValue) => {
                       const selectedUser = users.find((u) => u.name === currentValue);
                       if (selectedUser) {
-                        setValue(selectedUser.id.toString());
-                        localStorage.setItem("selectedUserId", selectedUser.id.toString());
+                        onUserSelect(selectedUser.id.toString());
                         router.refresh();
                       }
                       setOpen(false);
@@ -82,7 +71,7 @@ export function UserSelect({ users, className }: UserSelectProps) {
                     <Check
                       className={cn(
                         "ml-auto h-4 w-4",
-                        value === user.id.toString() ? "opacity-100" : "opacity-0"
+                        selectedUserId === user.id.toString() ? "opacity-100" : "opacity-0"
                       )}
                     />
                   </CommandItem>
@@ -92,7 +81,6 @@ export function UserSelect({ users, className }: UserSelectProps) {
           </Command>
         </PopoverContent>
       </Popover>
-
     </div>
   );
 }
