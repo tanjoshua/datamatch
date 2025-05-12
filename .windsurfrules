@@ -1,0 +1,18 @@
+# General Code Style & Formatting
+- Prefer named exports for components.
+
+# Project Structure & Architecture
+- Follow Next.js patterns and use the App Router.
+- Correctly determine when to use server vs. client components in Next.js.
+- Use /src directory for source code.
+
+# Styling & UI
+- Use Tailwind CSS for styling.
+- Use Shadcn UI for components. Check the ui directory for components. If the component is not yet there, use "npx shadcn@latest add <component-name>" to add it.
+
+# Data Fetching & Forms
+- Use React Hook Form for form handling.
+- Use Zod for validation.
+
+# Backend & Database
+- Use Neon DB for database access.
