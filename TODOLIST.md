@@ -21,7 +21,7 @@ This document outlines the development stages and tasks for creating a simple da
 
 ### Stage 2: User Selection & Persistence
 
-- [ ] Create users table in database
+- [x] Create users table in database
 - [ ] Create user selection component (dropdown)
 - [ ] Implement local storage persistence
 - [ ] Create basic layout with navigation
