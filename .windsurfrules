@@ -18,6 +18,8 @@
 # Data Fetching & Forms
 - Use React Hook Form for form handling.
 - Use Zod for validation.
+- Fetch data for server components before rendering.
+- If data is dynamically fetched or for mutations, use server actions.
 
 # Backend & Database
 - Use Neon DB for database access.

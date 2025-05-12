@@ -6,7 +6,7 @@ import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { sql } from "@/lib/db";
 import { StatsCard } from "./stats-card";
 import { GenerateResultsButton } from "./generate-results-button";
-
+import { MatchResultsTable, type MatchResult } from "@/components/match-results-table";
 
 // Get match statistics from database
 async function getMatchStatistics() {
@@ -21,7 +21,8 @@ async function getMatchStatistics() {
         totalMatches: 0,
         userCount: 0,
         highestMatch: null,
-        lowestMatch: null
+        lowestMatch: null,
+        allMatches: []
       };
     }
 
@@ -60,12 +61,29 @@ async function getMatchStatistics() {
       LIMIT 1
     `;
 
+    // Get all matches sorted by percentage (highest to lowest)
+    const allMatches = await sql`
+      SELECT 
+        mr.user_id_1, 
+        mr.user_id_2, 
+        mr.match_percentage,
+        mr.common_answers,
+        mr.total_possible,
+        u1.name as user1_name,
+        u2.name as user2_name
+      FROM match_results mr
+      JOIN users u1 ON mr.user_id_1 = u1.id
+      JOIN users u2 ON mr.user_id_2 = u2.id
+      ORDER BY mr.match_percentage DESC
+    `;
+
     return {
       hasResults: true,
       totalMatches,
       userCount: parseInt(userCount[0].count),
       highestMatch: highestMatch[0],
-      lowestMatch: lowestMatch[0]
+      lowestMatch: lowestMatch[0],
+      allMatches
     };
   } catch (error) {
     console.error("Error getting match statistics:", error);
@@ -157,6 +175,11 @@ export default async function ResultsPage() {
                 <Badge className="bg-green-600">
                   <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> Complete
                 </Badge>
+              </div>
+
+              {/* All Matches Table */}
+              <div className="mt-6">
+                <MatchResultsTable matchResults={(stats.allMatches || []) as MatchResult[]} />
               </div>
             </div>
           )}

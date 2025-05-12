@@ -3,7 +3,16 @@
 import * as React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Info } from "lucide-react";
 import { getMatchResults } from "@/app/actions";
+import { MatchComparisonContent } from "@/components/match-comparison-content";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export interface MatchResultEntry {
   other_user_id: number;
@@ -22,6 +31,13 @@ export function MatchResults({ selectedUserId }: MatchResultsProps) {
     mostDifferent: MatchResultEntry[];
   } | null>(null);
   const [error, setError] = React.useState<string | null>(null);
+  const [selectedMatch, setSelectedMatch] = React.useState<MatchResultEntry | null>(null);
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+
+  const openComparisonDialog = (match: MatchResultEntry) => {
+    setSelectedMatch(match);
+    setDialogOpen(true);
+  };
 
   React.useEffect(() => {
     const fetchResults = async () => {
@@ -131,11 +147,18 @@ export function MatchResults({ selectedUserId }: MatchResultsProps) {
           <CardContent className="pt-6">
             <ul className="space-y-4">
               {matchResults.mostSimilar.map((match) => (
-                <li key={match.other_user_id} className="flex items-center justify-between p-3 rounded-lg border border-muted">
+                <li
+                  key={match.other_user_id}
+                  className="flex items-center justify-between p-3 rounded-lg border border-muted cursor-pointer hover:bg-muted/50 transition-colors"
+                  onClick={() => openComparisonDialog(match)}
+                >
                   <span className="font-medium">{match.name}</span>
-                  <Badge className={`ml-auto ${getPercentageColor(match.match_percentage, true)}`}>
-                    {Math.round(match.match_percentage)}% Match
-                  </Badge>
+                  <div className="flex items-center">
+                    <Badge className={`${getPercentageColor(match.match_percentage, true)}`}>
+                      {Math.round(match.match_percentage)}% Match
+                    </Badge>
+                    <Info className="h-4 w-4 text-muted-foreground ml-2" />
+                  </div>
                 </li>
               ))}
             </ul>
@@ -151,17 +174,50 @@ export function MatchResults({ selectedUserId }: MatchResultsProps) {
           <CardContent className="pt-6">
             <ul className="space-y-4">
               {matchResults.mostDifferent.map((match) => (
-                <li key={match.other_user_id} className="flex items-center justify-between p-3 rounded-lg border border-muted">
+                <li
+                  key={match.other_user_id}
+                  className="flex items-center justify-between p-3 rounded-lg border border-muted cursor-pointer hover:bg-muted/50 transition-colors"
+                  onClick={() => openComparisonDialog(match)}
+                >
                   <span className="font-medium">{match.name}</span>
-                  <Badge className={`ml-auto ${getPercentageColor(match.match_percentage, false)}`}>
-                    {Math.round(match.match_percentage)}% Match
-                  </Badge>
+                  <div className="flex items-center">
+                    <Badge className={`${getPercentageColor(match.match_percentage, false)}`}>
+                      {Math.round(match.match_percentage)}% Match
+                    </Badge>
+                    <Info className="h-4 w-4 text-muted-foreground ml-2" />
+                  </div>
                 </li>
               ))}
             </ul>
           </CardContent>
         </Card>
       </div>
+
+      {/* Comparison Dialog */}
+      {selectedMatch && (
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-xl flex items-center justify-between">
+                <span>Match Comparison</span>
+                <Badge className={getPercentageColor(selectedMatch.match_percentage, selectedMatch.match_percentage >= 50)}>
+                  {Math.round(selectedMatch.match_percentage)}% Match
+                </Badge>
+              </DialogTitle>
+              <DialogDescription>
+                Question-by-question comparison between you and {selectedMatch.name}
+              </DialogDescription>
+            </DialogHeader>
+
+            <MatchComparisonContent
+              userId1={parseInt(selectedUserId!)}
+              userId2={selectedMatch.other_user_id}
+              user1Name="You"
+              user2Name={selectedMatch.name}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

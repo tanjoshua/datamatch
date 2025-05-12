@@ -198,6 +198,83 @@ export async function saveSurveyResponses(formData: SurveyResponseInput) {
 }
 
 /**
+ * Get comparison data between two users' responses
+ */
+export async function getMatchComparison(user1Id: number, user2Id: number) {
+  try {
+    // Get responses for user 1
+    const user1Responses = await sql`
+      SELECT 
+        sr.question_id,
+        q.text as question_text,
+        sr.selected_option_id,
+        qo.text as option_text
+      FROM 
+        survey_responses sr
+      JOIN 
+        questions q ON sr.question_id = q.id
+      JOIN 
+        question_options qo ON sr.selected_option_id = qo.id
+      WHERE 
+        sr.user_id = ${user1Id}
+      ORDER BY 
+        q.order_position ASC
+    `;
+
+    // Get responses for user 2
+    const user2Responses = await sql`
+      SELECT 
+        sr.question_id,
+        sr.selected_option_id,
+        qo.text as option_text
+      FROM 
+        survey_responses sr
+      JOIN 
+        question_options qo ON sr.selected_option_id = qo.id
+      WHERE 
+        sr.user_id = ${user2Id}
+      ORDER BY 
+        sr.question_id ASC
+    `;
+
+    // Create a map of user 2 responses for easier lookup
+    const user2ResponsesMap = new Map();
+    
+    user2Responses.forEach((response) => {
+      user2ResponsesMap.set(response.question_id, {
+        selected_option_id: response.selected_option_id,
+        option_text: response.option_text
+      });
+    });
+
+    // Combine the responses
+    const comparisons = user1Responses.map((user1Response) => {
+      const user2Response = user2ResponsesMap.get(user1Response.question_id);
+      
+      if (!user2Response) {
+        return null; // User 2 didn't answer this question
+      }
+      
+      return {
+        question_id: user1Response.question_id,
+        question_text: user1Response.question_text,
+        user1_option_text: user1Response.option_text,
+        user2_option_text: user2Response.option_text,
+        is_same: user1Response.selected_option_id === user2Response.selected_option_id
+      };
+    }).filter(Boolean); // Remove any null entries
+
+    return { success: true, data: comparisons };
+  } catch (error) {
+    console.error("Error fetching match comparison:", error);
+    return { 
+      success: false, 
+      error: "Failed to fetch comparison data" 
+    };
+  }
+}
+
+/**
  * Generate match results between all surveyed users
  */
 export async function generateMatchResults() {
