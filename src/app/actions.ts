@@ -5,6 +5,99 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 /**
+ * Check if match results are available
+ */
+export async function checkMatchResultsAvailable() {
+  try {
+    const result = await sql`
+      SELECT COUNT(*) as count
+      FROM match_results
+    `;
+    return { 
+      available: parseInt(result[0].count) > 0,
+    };
+  } catch (error) {
+    console.error("Error checking match results:", error);
+    return { available: false };
+  }
+}
+
+/**
+ * Get match results for a specific user
+ */
+export async function getMatchResults(userId: number) {
+  try {
+    // Get most similar matches (highest match percentage)
+    const mostSimilar = await sql`
+      WITH user_matches AS (
+        SELECT 
+          user_id_1 as other_user_id, 
+          match_percentage 
+        FROM match_results 
+        WHERE user_id_2 = ${userId}
+        UNION
+        SELECT 
+          user_id_2 as other_user_id, 
+          match_percentage 
+        FROM match_results 
+        WHERE user_id_1 = ${userId}
+      )
+      SELECT 
+        um.other_user_id, 
+        u.name, 
+        um.match_percentage
+      FROM 
+        user_matches um
+      JOIN 
+        users u ON um.other_user_id = u.id
+      ORDER BY 
+        um.match_percentage DESC
+      LIMIT 5
+    `;
+
+    // Get most different matches (lowest match percentage)
+    const mostDifferent = await sql`
+      WITH user_matches AS (
+        SELECT 
+          user_id_1 as other_user_id, 
+          match_percentage 
+        FROM match_results 
+        WHERE user_id_2 = ${userId}
+        UNION
+        SELECT 
+          user_id_2 as other_user_id, 
+          match_percentage 
+        FROM match_results 
+        WHERE user_id_1 = ${userId}
+      )
+      SELECT 
+        um.other_user_id, 
+        u.name, 
+        um.match_percentage
+      FROM 
+        user_matches um
+      JOIN 
+        users u ON um.other_user_id = u.id
+      ORDER BY 
+        um.match_percentage ASC
+      LIMIT 5
+    `;
+
+    return { 
+      success: true, 
+      mostSimilar, 
+      mostDifferent 
+    };
+  } catch (error) {
+    console.error("Error fetching match results:", error);
+    return { 
+      success: false, 
+      error: "Failed to fetch match results" 
+    };
+  }
+}
+
+/**
  * Get a user's existing survey responses
  */
 export async function getUserResponses(userId: number) {

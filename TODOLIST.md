@@ -67,10 +67,10 @@ This document outlines the development stages and tasks for creating a simple da
 
 ### Stage 6: Results Display
 
-- [ ] Create results page UI
-- [ ] Implement conditional access (only when results are processed)
-- [ ] Display similar matches section
-- [ ] Display different matches section
+- [x] Create results page UI
+- [x] Implement conditional access (only when results are processed)
+- [x] Display similar matches section
+- [x] Display different matches section
 
 ### Stage 7: Testing & Refinement
 

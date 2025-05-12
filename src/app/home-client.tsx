@@ -6,15 +6,17 @@ import { Alert, AlertTitle } from "@/components/ui/alert";
 import { UserCircle } from "lucide-react";
 import { getUserResponses } from "./actions";
 import { SurveyContent } from "@/components/survey-content";
+import { MatchResults } from "@/components/match-results";
 import { User } from "@/lib/db";
 import { QuestionWithOptions, UserResponse } from "@/components/survey-content";
 
 interface HomeClientProps {
   users: User[];
   questions: QuestionWithOptions[];
+  matchResultsAvailable: boolean;
 }
 
-export function HomeClient({ users, questions }: HomeClientProps) {
+export function HomeClient({ users, questions, matchResultsAvailable }: HomeClientProps) {
   const [selectedUserId, setSelectedUserId] = React.useState<string | null>(null);
   const [previousResponses, setPreviousResponses] = React.useState<UserResponse[]>([]);
   const [loadingResponses, setLoadingResponses] = React.useState(false);
@@ -107,13 +109,17 @@ export function HomeClient({ users, questions }: HomeClientProps) {
                 </button>
               </div>
             </Alert>
-            <SurveyContent
-              users={users}
-              questions={questions}
-              selectedUserId={selectedUserId}
-              previousResponses={previousResponses}
-              loadingResponses={loadingResponses}
-            />
+            {matchResultsAvailable ? (
+              <MatchResults selectedUserId={selectedUserId} />
+            ) : (
+              <SurveyContent
+                users={users}
+                questions={questions}
+                selectedUserId={selectedUserId}
+                previousResponses={previousResponses}
+                loadingResponses={loadingResponses}
+              />
+            )}
           </>
         )}
 
