@@ -60,10 +60,10 @@ export function ResetSurveyButton() {
             <AlertDialogDescription>
               This action will delete all survey responses and match results. All users will be marked
               as not having completed the survey. Questions will be preserved, but all other data will be permanently removed.
-              <div className="p-3 mt-3 border rounded-md border-destructive/30 bg-destructive/10">
-                <strong>Warning:</strong> This action cannot be undone.
-              </div>
             </AlertDialogDescription>
+            <div className="p-3 mt-3 border rounded-md border-destructive/30 bg-destructive/10 text-sm">
+              <strong>Warning:</strong> This action cannot be undone.
+            </div>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>

@@ -143,8 +143,8 @@ export function MatchResults({ selectedUserId }: MatchResultsProps) {
         <AlertDescription className="text-sm">
           <p className="font-medium text-pink-900 mb-2">To facilitate speed bonding, consider the following activities with your matches:</p>
           <ul className="space-y-1 text-pink-800">
-            <li><strong>Most similar</strong> - stare awkwardly at each other across the room and never speak; choose each other&apos;s birdsona; take MC together</li>
-            <li><strong>Least similar</strong> - rat each other&apos;s messages out to Faizad; 1v1 brawl in the CSC lobby</li>
+            <li><strong>Most similar</strong> - stare awkwardly at each other across the room and never speak; choose each other&apos;s birdsona; take MC together.</li>
+            <li><strong>Least similar</strong> - rat each other&apos;s messages out to Faizad; 1v1 brawl in the CSC lobby; run against each other in GE2030.</li>
           </ul>
         </AlertDescription>
       </Alert>
