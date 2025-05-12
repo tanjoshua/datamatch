@@ -58,11 +58,11 @@ This document outlines the development stages and tasks for creating a simple da
 ### Stage 5: Results Processing
 
 - [x] Create results table in database
-- [ ] Implement matching algorithm
-  - [ ] Calculate similarity scores between users
-  - [ ] Determine most similar matches
-  - [ ] Determine most different matches
-- [ ] Store match results in database
+- [x] Implement matching algorithm
+  - [x] Calculate similarity scores between users
+  - [x] Determine most similar matches
+  - [x] Determine most different matches
+- [x] Store match results in database
 
 ### Stage 6: Results Display
 
