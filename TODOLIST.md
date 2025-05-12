@@ -49,6 +49,7 @@ This document outlines the development stages and tasks for creating a simple da
 
 - [x] Create survey page
 - [x] Implement survey flow
+  - [x] Refactor user selection to page component (proper client/server component separation)
   - [x] Question display
   - [x] Response submission
   - [x] Completion confirmation

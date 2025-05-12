@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { User, Question, QuestionOption } from "@/lib/db";
-import { UserSelect } from "@/components/user-select";
+
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -12,8 +12,8 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { saveSurveyResponses, getUserResponses } from "@/app/actions";
-import { UserCircle, CheckCircle, Loader2 } from "lucide-react";
+import { saveSurveyResponses } from "@/app/actions";
+import { CheckCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 // Validation schema for survey responses
@@ -24,7 +24,7 @@ const responseSchema = z.object({
 type ResponseFormValues = z.infer<typeof responseSchema>;
 
 // Type for previous user response
-type UserResponse = {
+export type UserResponse = {
   question_id: number;
   selected_option_id: number;
   question_text: string;
@@ -32,22 +32,22 @@ type UserResponse = {
 };
 
 // Extend Question type to include options array
-type QuestionWithOptions = Question & {
+export type QuestionWithOptions = Question & {
   options: QuestionOption[];
 };
 
 interface SurveyContentProps {
   users: User[];
   questions: QuestionWithOptions[];
+  selectedUserId: string | null;
+  previousResponses: UserResponse[];
+  loadingResponses: boolean;
 }
 
-export function SurveyContent({ users, questions }: SurveyContentProps) {
-  const [selectedUserId, setSelectedUserId] = React.useState<string | null>(null);
-  const [isLoading, setIsLoading] = React.useState(true);
+export function SurveyContent({ users, questions, selectedUserId, previousResponses, loadingResponses }: SurveyContentProps) {
+  const [isLoading, setIsLoading] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [submitSuccess, setSubmitSuccess] = React.useState(false);
-  const [previousResponses, setPreviousResponses] = React.useState<UserResponse[]>([]);
-  const [loadingResponses, setLoadingResponses] = React.useState(false);
 
   // Initialize the form with React Hook Form
   const form = useForm<ResponseFormValues>({
@@ -57,54 +57,18 @@ export function SurveyContent({ users, questions }: SurveyContentProps) {
     },
   });
 
-  // Load selected user from localStorage on component mount
+  // Reset form when user changes
   React.useEffect(() => {
-    const savedUserId = localStorage.getItem("selectedUserId");
-    if (savedUserId) {
-      setSelectedUserId(savedUserId);
-      checkUserResponses(parseInt(savedUserId));
+    if (selectedUserId) {
+      form.reset();
+      setSubmitSuccess(false);
     }
-    setIsLoading(false);
-  }, []);
-
-  // Check for previous user responses
-  const checkUserResponses = async (userId: number) => {
-    setLoadingResponses(true);
-    try {
-      const result = await getUserResponses(userId);
-      if (result.success && result.data && result.data.length > 0) {
-        setPreviousResponses(result.data as UserResponse[]);
-      } else {
-        setPreviousResponses([]);
-      }
-    } catch (err) {
-      console.error("Error checking user responses:", err);
-      setPreviousResponses([]);
-    } finally {
-      setLoadingResponses(false);
-    }
-  };
-
-  // Function to handle user selection
-  const handleUserSelect = (userId: string) => {
-    setSelectedUserId(userId);
-    localStorage.setItem("selectedUserId", userId);
-    // Reset form and feedback states when changing users
-    form.reset();
-    setSubmitSuccess(false);
-
-    // Check if user has already completed the survey
-    checkUserResponses(parseInt(userId));
-  };
-
-  // Function to clear user selection
-  const clearUserSelection = () => {
-    setSelectedUserId(null);
-    localStorage.removeItem("selectedUserId");
-    form.reset();
-    setSubmitSuccess(false);
-    setPreviousResponses([]);
-  };
+  }, [selectedUserId, form]);
+  
+  // Set loading state based on loadingResponses
+  React.useEffect(() => {
+    setIsLoading(loadingResponses);
+  }, [loadingResponses]);
 
   // Handle form submission
   const onSubmit = async (values: ResponseFormValues) => {
@@ -136,8 +100,7 @@ export function SurveyContent({ users, questions }: SurveyContentProps) {
         setSubmitSuccess(true);
         toast.success("Survey submitted successfully!");
 
-        // Fetch the submitted responses to display in read-only mode
-        checkUserResponses(parseInt(selectedUserId));
+        // No need to fetch responses here as they will be passed from parent
       } else {
         toast.error(result.error || "Failed to submit survey. Please try again.");
       }
@@ -167,33 +130,6 @@ export function SurveyContent({ users, questions }: SurveyContentProps) {
         </div>
       ) : selectedUser ? (
         <>
-          {/* User selection alert at top */}
-          <Alert className="bg-muted flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4">
-            <div className="flex items-center gap-2">
-              <UserCircle className="h-5 w-5 text-primary shrink-0" />
-              <div>
-                <AlertTitle className="font-medium">You are responding as {selectedUser.name}</AlertTitle>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="text-sm text-muted-foreground">Not you?</div>
-              <div className="w-48">
-                <UserSelect
-                  users={users}
-                  className="w-full"
-                  selectedUserId={selectedUserId || undefined}
-                  onUserSelect={handleUserSelect}
-                />
-              </div>
-              <button
-                onClick={clearUserSelection}
-                className="text-sm text-primary hover:text-primary/80 hover:underline"
-              >
-                Clear selection
-              </button>
-            </div>
-          </Alert>
 
 
 
@@ -336,12 +272,10 @@ export function SurveyContent({ users, questions }: SurveyContentProps) {
             </p>
           </div>
 
-          <UserSelect
-            users={users}
-            className="w-full"
-            selectedUserId={selectedUserId || undefined}
-            onUserSelect={handleUserSelect}
-          />
+          {/* User selection is now handled in the parent component */}
+          <div className="w-full text-center">
+            <p className="text-sm text-muted-foreground">Please use the user selection above</p>
+          </div>
 
           <div className="mt-6 space-y-4">
             <p className="text-sm text-muted-foreground">

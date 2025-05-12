@@ -1,5 +1,5 @@
 import { getUser, getQuestions, getQuestionOptions } from "@/lib/db";
-import { SurveyContent } from "@/components/survey-content";
+import { HomeClient } from "./home-client";
 
 export const dynamic = 'force-dynamic';
 
@@ -18,20 +18,5 @@ export default async function Home() {
     })
   );
 
-  return (
-    <div className="min-h-screen flex flex-col p-4" style={{ backgroundColor: "#ffccdc" }}>
-      <div className="w-full max-w-3xl mx-auto space-y-8">
-        <SurveyContent
-          users={users}
-          questions={questionsWithOptions}
-        />
-
-        <div className="text-center">
-          <p className="text-xs text-muted-foreground mt-4">
-            FC DataMatch © {new Date().getFullYear()}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
+  return <HomeClient users={users} questions={questionsWithOptions} />;
 }
