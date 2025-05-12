@@ -4,9 +4,11 @@ import * as React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { Info, Lightbulb } from "lucide-react";
 import { getMatchResults } from "@/app/actions";
 import { MatchComparisonContent } from "@/components/match-comparison-content";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import {
   Dialog,
   DialogContent,
@@ -14,6 +16,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 
 export interface MatchResultEntry {
   other_user_id: number;
@@ -34,6 +45,7 @@ export function MatchResults({ selectedUserId }: MatchResultsProps) {
   const [error, setError] = React.useState<string | null>(null);
   const [selectedMatch, setSelectedMatch] = React.useState<MatchResultEntry | null>(null);
   const [dialogOpen, setDialogOpen] = React.useState(false);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   const openComparisonDialog = (match: MatchResultEntry) => {
     setSelectedMatch(match);
@@ -205,30 +217,63 @@ export function MatchResults({ selectedUserId }: MatchResultsProps) {
         </Card>
       </div>
 
-      {/* Comparison Dialog */}
+      {/* Responsive Comparison Dialog/Drawer */}
       {selectedMatch && (
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-xl flex items-center justify-between">
-                <span>Match Comparison</span>
-                <Badge className={getPercentageColor(selectedMatch.match_percentage, selectedMatch.match_percentage >= 50)}>
-                  {Math.round(selectedMatch.match_percentage)}% Match
-                </Badge>
-              </DialogTitle>
-              <DialogDescription>
-                Question-by-question comparison between you and {selectedMatch.name}
-              </DialogDescription>
-            </DialogHeader>
+        <>
+          {isDesktop ? (
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="text-xl flex items-center justify-between">
+                    <span>Match Comparison</span>
+                    <Badge className={getPercentageColor(selectedMatch.match_percentage, selectedMatch.match_percentage >= 50)}>
+                      {Math.round(selectedMatch.match_percentage)}% Match
+                    </Badge>
+                  </DialogTitle>
+                  <DialogDescription>
+                    Question-by-question comparison between you and {selectedMatch.name}
+                  </DialogDescription>
+                </DialogHeader>
 
-            <MatchComparisonContent
-              userId1={parseInt(selectedUserId!)}
-              userId2={selectedMatch.other_user_id}
-              user1Name="You"
-              user2Name={selectedMatch.name}
-            />
-          </DialogContent>
-        </Dialog>
+                <MatchComparisonContent
+                  userId1={parseInt(selectedUserId!)}
+                  userId2={selectedMatch.other_user_id}
+                  user1Name="You"
+                  user2Name={selectedMatch.name}
+                />
+              </DialogContent>
+            </Dialog>
+          ) : (
+            <Drawer open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DrawerContent>
+                <DrawerHeader className="text-left">
+                  <div className="flex items-center justify-between">
+                    <DrawerTitle>Match Comparison</DrawerTitle>
+                    <Badge className={getPercentageColor(selectedMatch.match_percentage, selectedMatch.match_percentage >= 50)}>
+                      {Math.round(selectedMatch.match_percentage)}% Match
+                    </Badge>
+                  </div>
+                  <DrawerDescription>
+                    Question-by-question comparison between you and {selectedMatch.name}
+                  </DrawerDescription>
+                </DrawerHeader>
+                <div className="px-4 overflow-y-auto pb-8">
+                  <MatchComparisonContent
+                    userId1={parseInt(selectedUserId!)}
+                    userId2={selectedMatch.other_user_id}
+                    user1Name="You"
+                    user2Name={selectedMatch.name}
+                  />
+                </div>
+                <DrawerFooter className="pt-2">
+                  <DrawerClose asChild>
+                    <Button variant="outline">Close</Button>
+                  </DrawerClose>
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
+          )}
+        </>
       )}
     </div>
   );
