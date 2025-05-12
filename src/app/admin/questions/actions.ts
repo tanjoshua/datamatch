@@ -118,3 +118,38 @@ export async function deleteQuestionAction(id: number) {
     };
   }
 }
+
+// Server action to swap question positions
+export async function swapQuestionPositionsAction(
+  questionId1: number,
+  position1: number,
+  questionId2: number,
+  position2: number
+) {
+  try {
+    // Update both questions directly since there are no DB constraints
+    // Update the first question's position
+    await sql`
+      UPDATE questions
+      SET order_position = ${position2}
+      WHERE id = ${questionId1}
+    `;
+    
+    // Update the second question's position
+    await sql`
+      UPDATE questions
+      SET order_position = ${position1}
+      WHERE id = ${questionId2}
+    `;
+    
+    // Revalidate the questions page after swapping positions
+    revalidatePath('/admin/questions');
+    return { success: true };
+  } catch (error) {
+    console.error('Error swapping question positions:', error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    };
+  }
+}

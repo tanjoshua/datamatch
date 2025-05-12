@@ -36,7 +36,7 @@ export default function DeleteQuestionDialog({
     try {
       setIsDeleting(true);
       const result = await deleteQuestionAction(Number(question.id));
-      
+
       if (result.success) {
         toast.success("Question deleted");
         router.refresh();
@@ -63,9 +63,6 @@ export default function DeleteQuestionDialog({
             undone.
           </DialogDescription>
         </DialogHeader>
-        <div className="py-4">
-          <p className="font-medium">{question.text}</p>
-        </div>
         <DialogFooter>
           <Button
             variant="outline"

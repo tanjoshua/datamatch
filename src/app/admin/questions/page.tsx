@@ -29,9 +29,6 @@ export default async function QuestionsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Survey Questions</h1>
-          <p className="text-muted-foreground mt-2">
-            Manage your survey questions and answer options
-          </p>
         </div>
         <AddQuestionDialog defaultOrderPosition={questions.length > 0 ? Math.max(...questions.map(q => q.order_position)) + 1 : 1} />
       </div>
