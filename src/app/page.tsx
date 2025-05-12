@@ -19,12 +19,8 @@ export default async function Home() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col p-4">
+    <div className="min-h-screen flex flex-col p-4" style={{ backgroundColor: "#ffccdc" }}>
       <div className="w-full max-w-3xl mx-auto space-y-8">
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold">44th FC Datamatch</h1>
-        </div>
-
         <SurveyContent
           users={users}
           questions={questionsWithOptions}
