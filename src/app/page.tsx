@@ -1,6 +1,8 @@
 import { getUser, getQuestions, getQuestionOptions } from "@/lib/db";
 import { SurveyContent } from "@/components/survey-content";
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   // Fetch all users from the database
   const users = await getUser();
