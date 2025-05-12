@@ -5,6 +5,8 @@ import Link from "next/link";
 import { AddUserForm } from "./add-user-form";
 import { UsersTable } from "./users-table";
 
+export const dynamic = 'force-dynamic';
+
 export default async function UsersManagementPage() {
   const users = await getUser();
 

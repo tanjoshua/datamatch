@@ -1,10 +1,12 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getUser } from "@/lib/db";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboard() {
   const users = await getUser();
   const completedSurveys = users.filter(user => user.has_completed_survey).length;
-  
+
   return (
     <div className="space-y-6">
       <div>
@@ -13,7 +15,7 @@ export default async function AdminDashboard() {
           Manage your DataMatch survey system
         </p>
       </div>
-      
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -26,7 +28,7 @@ export default async function AdminDashboard() {
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Completed Surveys</CardTitle>
@@ -38,7 +40,7 @@ export default async function AdminDashboard() {
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
@@ -53,7 +55,7 @@ export default async function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
-      
+
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="col-span-2">
           <CardHeader>
@@ -62,7 +64,7 @@ export default async function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="h-[10px] w-full bg-secondary rounded-full overflow-hidden">
-              <div 
+              <div
                 className="h-full bg-primary"
                 style={{ width: `${users.length ? Math.round((completedSurveys / users.length) * 100) : 0}%` }}
               />
