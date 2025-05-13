@@ -79,7 +79,7 @@ export function HomeClient({ users, questions, matchResultsAvailable }: HomeClie
             <Alert className="bg-pink-50 border-pink-200">
               <Lightbulb className="h-4 w-4 text-pink-500" />
               <AlertDescription className="text-sm text-pink-800">
-                Hey FC-mates! Its week 5.5, and hopefully you have gotten the chance to mix and mingle, but realistically thats tough with 67 other people milling around at all times. We designed this quickie test to help you get friend-matched with folks you might not have had a chance to meet, but are your potential course-soul-mates! Do with the results what you will ~
+              Hey FC-mates! Its week 5.5, and hopefully you have gotten the chance to mix and mingle, but realistically thats tough with 67 other people milling around at all times. We designed this fun survey to help you get friend-matched (or enemy-matched) with folks you might not have had a chance to meet! Do with the results what you will ~
               </AlertDescription>
             </Alert>
 
